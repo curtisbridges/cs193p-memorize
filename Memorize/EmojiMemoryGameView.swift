@@ -9,19 +9,17 @@
 import SwiftUI
 
 struct EmojiMemoryGameView: View {
-    @ObservedObject var viewModel:  EmojiMemoryGame
+    @ObservedObject var viewModel: EmojiMemoryGame
 
     var body: some View {
-        HStack {
-            ForEach(viewModel.cards) { card in
-                CardView(card: card)
-                    .aspectRatio(CGFloat(2.0/3.0), contentMode: ContentMode.fit)
-                .onTapGesture {
-                    self.viewModel.choose(card: card)
-                }
+        Grid(viewModel.cards) { card in
+            CardView(card: card).onTapGesture {
+                self.viewModel.choose(card: card)
             }
+            .aspectRatio(CGFloat(2.0/3.0), contentMode: ContentMode.fit)
+            .padding()
         }
-        .padding()
+        //.padding()
         .foregroundColor(.orange)
     }
 }
@@ -36,17 +34,19 @@ struct CardView: View {
     }
 
     func body(for size: CGSize) -> some View {
-            ZStack {
-                if self.card.isFaceUp {
-                    RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
-                    RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
-                    Text(self.card.content)
-                } else {
+        ZStack {
+            if card.isFaceUp {
+                RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
+                RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
+                Text(card.content)
+            } else {
+                if !card.isMatched {
                     RoundedRectangle(cornerRadius: cornerRadius).fill()
                 }
             }
-            .font(Font.system(size: fontSize(for: size)))
         }
+        .font(Font.system(size: fontSize(for: size)))
+    }
 
     // MARK: - Drawing Constants
 
@@ -54,7 +54,7 @@ struct CardView: View {
     let edgeLineWidth: CGFloat = 3
 
     func fontSize(for size: CGSize) -> CGFloat {
-        min(size.width, size.height) * 0.75
+        min(size.width, size.height) * 0.7
     }
 }
 
